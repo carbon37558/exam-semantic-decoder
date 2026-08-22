@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import XLSX from "xlsx";
+import { formatScientificText } from "../src/lib/formatText.ts";
 
 const source = path.resolve("data/exam_semantic_decoder_terms.xlsx");
 const destination = path.resolve("src/generated/terms.json");
@@ -27,8 +28,8 @@ const terms = rows.map((row, index) => {
     term: record.term,
     aliases: record.aliases.split(",").map((alias) => alias.trim()).filter(Boolean),
     subject: record.subject,
-    official: record.official,
-    decoded: record.decoded,
+    official: formatScientificText(record.official),
+    decoded: formatScientificText(record.decoded),
   };
 });
 

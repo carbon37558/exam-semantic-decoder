@@ -36,6 +36,18 @@ Excel 第一张工作表需要包含以下字段：
 
 `pnpm dev` 和 `pnpm build` 会在运行前自动读取 Excel，并生成网页使用的 `src/generated/terms.json`。这个 JSON 是构建产物，不需要人工编辑；Excel 始终是唯一数据源。
 
+### 上下标书写
+
+`official` 和 `decoded` 中已有的 Unicode 上下标会原样保留。也可以在 Excel 中使用以下纯文本写法，构建时会自动转换：
+
+- `H_2O` → `H₂O`
+- `SO4^2-` → `SO₄²⁻`
+- `Mg^2+` → `Mg²⁺`
+- `x^2` → `x²`
+- `x_1` → `x₁`
+
+没有 `_` 或 `^` 标记的普通数字不会被转换。请不要依赖 Excel 单元格的字体上标或下标样式；需要保留的格式应使用 Unicode 字符或上述纯文本标记。
+
 ## 技术栈
 
 - React 19
