@@ -1,7 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import ImageOcrInput from "./ImageOcrInput";
 import terms from "./generated/terms.json";
+import { applyOcrText } from "./lib/imageInput";
 import { analyzeText, type Match, type TermRecord } from "./lib/matcher";
 
 const SUBJECTS = ["All", "MATH", "CHEM"] as const;
@@ -12,6 +14,7 @@ export default function Home() {
   const [subject, setSubject] = useState<(typeof SUBJECTS)[number]>("All");
   const [analysis, setAnalysis] = useState<{ text: string; matches: Match[] } | null>(null);
   const [selected, setSelected] = useState<Match | null>(null);
+  const [pendingOcrText, setPendingOcrText] = useState<string | null>(null);
 
   const segments = useMemo(() => {
     if (!analysis) return [];
@@ -30,6 +33,20 @@ export default function Home() {
     const matches = analyzeText(question, subject, records);
     setAnalysis({ text: question, matches });
     setSelected(null);
+  }
+
+  function handleOcrText(text: string) {
+    if (!question) {
+      setQuestion(text);
+      return;
+    }
+    setPendingOcrText(text);
+  }
+
+  function acceptOcrText(mode: "replace" | "append") {
+    if (pendingOcrText === null) return;
+    setQuestion((current) => applyOcrText(current, pendingOcrText, mode));
+    setPendingOcrText(null);
   }
 
   return (
@@ -64,10 +81,20 @@ export default function Home() {
           </div>
 
           {!analysis ? (
-            <label className="question-field">
-              <span>Paste question text</span>
-              <textarea value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Paste or type an exam question here…" autoFocus />
-            </label>
+            <div className="question-field">
+              <label htmlFor="question-text">Paste question text</label>
+              <textarea id="question-text" value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Paste or type an exam question here…" autoFocus />
+              <ImageOcrInput onTextRecognized={handleOcrText} />
+              {pendingOcrText !== null && (
+                <div className="ocr-text-choice" role="status">
+                  <p>The text box already has content. How should the OCR text be added?</p>
+                  <div>
+                    <button type="button" onClick={() => acceptOcrText("replace")}>Replace existing text</button>
+                    <button type="button" onClick={() => acceptOcrText("append")}>Append OCR text</button>
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             <div className="result-wrap">
               <div className="result-heading">
