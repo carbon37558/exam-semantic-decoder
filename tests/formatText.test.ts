@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { formatScientificText } from "../src/lib/formatText.ts";
+import { formatScientificText } from "../src/lib/formatText.mjs";
 
 test("preserves existing Unicode scientific notation", () => {
   for (const value of ["H₂O", "Cu²⁺", "SO₄²⁻", "NH₄⁺", "x²", "x₁", "f′(x)"]) {

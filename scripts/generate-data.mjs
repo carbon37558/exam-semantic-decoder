@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import XLSX from "xlsx";
-import { formatScientificText } from "../src/lib/formatText.ts";
+import { formatScientificText } from "../src/lib/formatText.mjs";
 
 const source = path.resolve("data/exam_semantic_decoder_terms.xlsx");
 const destination = path.resolve("src/generated/terms.json");
