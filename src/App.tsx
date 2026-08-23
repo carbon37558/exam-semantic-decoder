@@ -64,7 +64,7 @@ export default function Home() {
 
       <section className="intro" id="top">
         <p className="eyebrow">EXAM LANGUAGE, DECODED</p>
-        <h1>See what the question<br />is really asking.</h1>
+        <h1>See what the question is really asking.</h1>
         <p className="hero-translation">看懂题目真正想考什么</p>
         <p className="intro-copy">Paste your question. We'll help you see what it’s really asking.</p>
       </section>
