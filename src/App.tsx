@@ -1,9 +1,8 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import ImageOcrInput from "./ImageOcrInput";
 import terms from "./generated/terms.json";
-import { applyOcrText } from "./lib/imageInput";
 import { analyzeText, type Match, type TermRecord } from "./lib/matcher";
 
 const SUBJECTS = ["All", "MATH", "CHEM"] as const;
@@ -14,8 +13,9 @@ export default function Home() {
   const [subject, setSubject] = useState<(typeof SUBJECTS)[number]>("All");
   const [analysis, setAnalysis] = useState<{ text: string; matches: Match[] } | null>(null);
   const [selected, setSelected] = useState<Match | null>(null);
-  const [pendingOcrText, setPendingOcrText] = useState<string | null>(null);
   const [hasExtractedText, setHasExtractedText] = useState(false);
+  const [workspaceVersion, setWorkspaceVersion] = useState(0);
+  const workspaceVersionRef = useRef(0);
 
   const segments = useMemo(() => {
     if (!analysis) return [];
@@ -37,19 +37,19 @@ export default function Home() {
     setHasExtractedText(false);
   }
 
-  function handleOcrText(text: string) {
+  function handleOcrText(text: string, sourceVersion: number) {
+    if (sourceVersion !== workspaceVersionRef.current) return;
+    setQuestion(text);
     setHasExtractedText(true);
-    if (!question) {
-      setQuestion(text);
-      return;
-    }
-    setPendingOcrText(text);
   }
 
-  function acceptOcrText(mode: "replace" | "append") {
-    if (pendingOcrText === null) return;
-    setQuestion((current) => applyOcrText(current, pendingOcrText, mode));
-    setPendingOcrText(null);
+  function handleClearAll() {
+    workspaceVersionRef.current += 1;
+    setWorkspaceVersion(workspaceVersionRef.current);
+    setQuestion("");
+    setAnalysis(null);
+    setSelected(null);
+    setHasExtractedText(false);
   }
 
   return (
@@ -78,25 +78,20 @@ export default function Home() {
                 {SUBJECTS.map((item) => <option key={item}>{item}</option>)}
               </select>
             </label>
-            <button className="analyze-button" type="button" onClick={handleAnalyze} disabled={!question.trim()}>
-              <span>Analyze&nbsp;&nbsp;<span className="ui-cn">开始解码</span></span> <span aria-hidden="true">→</span>
-            </button>
+            <div className="workspace-actions">
+              <button className="analyze-button" type="button" onClick={handleAnalyze} disabled={!question.trim()}>
+                <span>Analyze&nbsp;&nbsp;<span className="ui-cn">开始解码</span></span> <span aria-hidden="true">→</span>
+              </button>
+              <button className="clear-all-button" type="button" onClick={handleClearAll}>Clear all</button>
+            </div>
           </div>
 
           {!analysis ? (
             <div className="question-field">
               <label htmlFor="question-text">Paste question text</label>
               <textarea id="question-text" value={question} onChange={(event) => setQuestion(event.target.value)} placeholder="Paste or type an exam question here…" autoFocus />
-              <ImageOcrInput onTextRecognized={handleOcrText} />
-              {pendingOcrText !== null && (
-                <div className="ocr-text-choice" role="status">
-                  <p>The text box already has content. How should the OCR text be added?</p>
-                  <div>
-                    <button type="button" onClick={() => acceptOcrText("replace")}>Replace existing text</button>
-                    <button type="button" onClick={() => acceptOcrText("append")}>Append OCR text</button>
-                  </div>
-                </div>
-              )}
+              <ImageOcrInput key={workspaceVersion} onTextRecognized={(text) => handleOcrText(text, workspaceVersion)} />
+              {hasExtractedText && <p className="ocr-success" role="status">Text extracted. Please review before analysis.</p>}
             </div>
           ) : (
             <div className="result-wrap">

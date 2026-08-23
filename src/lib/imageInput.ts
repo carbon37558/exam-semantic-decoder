@@ -6,8 +6,3 @@ export function validateImage(file: Pick<File, "size" | "type">) {
   if (file.size > MAX_IMAGE_BYTES) return "Image must be 3MB or smaller.";
   return null;
 }
-
-export function applyOcrText(existing: string, recognized: string, mode: "replace" | "append") {
-  if (mode === "replace" || !existing) return recognized;
-  return `${existing}\n\n${recognized}`;
-}
