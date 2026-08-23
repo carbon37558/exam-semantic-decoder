@@ -15,6 +15,7 @@ export default function Home() {
   const [analysis, setAnalysis] = useState<{ text: string; matches: Match[] } | null>(null);
   const [selected, setSelected] = useState<Match | null>(null);
   const [pendingOcrText, setPendingOcrText] = useState<string | null>(null);
+  const [hasExtractedText, setHasExtractedText] = useState(false);
 
   const segments = useMemo(() => {
     if (!analysis) return [];
@@ -33,9 +34,11 @@ export default function Home() {
     const matches = analyzeText(question, subject, records);
     setAnalysis({ text: question, matches });
     setSelected(null);
+    setHasExtractedText(false);
   }
 
   function handleOcrText(text: string) {
+    setHasExtractedText(true);
     if (!question) {
       setQuestion(text);
       return;
@@ -139,7 +142,7 @@ export default function Home() {
             <div className="empty-concept">
               <span className="selection-icon" aria-hidden="true">Aa</span>
               <h2>{analysis?.matches.length ? "Select a highlighted term" : "Concepts appear here"}</h2>
-              <p>{analysis?.matches.length ? "Click any yellow highlight to see its official and decoded meaning." : "After analysis, click a highlighted phrase to activate the concept your teacher has defined."}</p>
+              <p>{analysis?.matches.length ? "Click any yellow highlight to see its official and decoded meaning." : hasExtractedText ? "Review your text, then analyze." : "After analysis, click a highlighted phrase to activate the concept your teacher has defined."}</p>
             </div>
           )}
         </aside>

@@ -74,8 +74,7 @@ export default function ImageOcrInput({ onTextRecognized }: Props) {
     <section className="ocr-input" aria-label="Image text input">
       <div className="ocr-heading">
         <div>
-          <span className="ocr-label">Or use an image</span>
-          <p>Text recognition runs on this device. Your image is not uploaded.</p>
+          <span className="ocr-label">Or upload image</span>
         </div>
         <div className="ocr-actions">
           <button type="button" onClick={() => chooseInput.current?.click()}>Choose image</button>
@@ -106,7 +105,7 @@ export default function ImageOcrInput({ onTextRecognized }: Props) {
           <div className="ocr-preview-actions">
             <button type="button" onClick={removeImage} disabled={isReading}>Remove</button>
             <button className="ocr-read-button" type="button" onClick={handleReadImage} disabled={isReading}>
-              {isReading ? "Reading image…" : "Read text from image"}
+              {isReading ? "Reading image…" : "Extract text"}
             </button>
           </div>
         </div>
