@@ -24,7 +24,14 @@ test("converts Excel rich-text mathematics formatting and primes to Unicode", ()
 test("reads superscript and subscript runs from the current Excel database", () => {
   const workbook = XLSX.readFile("data/exam_semantic_decoder_terms.xlsx", { cellHTML: true });
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  assert.equal(richTextToUnicode(sheet.E40), "f″，d²y/dx²");
-  assert.equal(richTextToUnicode(sheet.E123), "最高次方是x²，画出来是抛物线");
-  assert.equal(richTextToUnicode(sheet.E138), "(y₂-y₁)/(x₂-x₁)");
+  const rows = XLSX.utils.sheet_to_json<Record<string, string> & { __rowNum__: number }>(sheet, { defval: "" });
+  const decodedFor = (term: string) => {
+    const row = rows.find((record) => record.term === term);
+    assert.ok(row, `Missing Excel term: ${term}`);
+    return richTextToUnicode(sheet[XLSX.utils.encode_cell({ r: row.__rowNum__, c: 4 })]);
+  };
+
+  assert.equal(decodedFor("second derivative"), "f″，d²y/dx²");
+  assert.equal(decodedFor("quadratic"), "最高次方是x²，画出来是抛物线");
+  assert.equal(decodedFor("gradient"), "m=(y₂-y₁)/(x₂-x₁)");
 });
