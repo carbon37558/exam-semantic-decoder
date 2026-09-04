@@ -55,10 +55,13 @@ export default function Home() {
   return (
     <main>
       <header className="topbar">
-        <a className="brand" href="#top" aria-label="Exam Semantic Decoder home">
-          <span className="brand-mark" aria-hidden="true">ES</span>
-          <span>Exam Semantic Decoder</span>
-        </a>
+        <div className="brand-area">
+          <a className="lab-return" href="https://adams-lab.pages.dev/">← Adam's Lab</a>
+          <a className="brand" href="#top" aria-label="Exam Semantic Decoder home">
+            <span className="brand-mark" aria-hidden="true">ES</span>
+            <span>Exam Semantic Decoder</span>
+          </a>
+        </div>
         <span className="tagline">Read the question. Activate the concept.</span>
       </header>
 
@@ -149,9 +152,8 @@ export default function Home() {
           <span>No generated explanations.</span>
         </div>
         <div className="footer-details">
-          <p>© 2026 Adam SUN</p>
           <p className="footer-title">Exam Semantic Decoder</p>
-          <p>Created by Adam SUN</p>
+          <p className="footer-attribution">Made by Adam Sun · <a href="https://adams-lab.pages.dev/">Adam's Lab</a></p>
           <address>
             <span>Contact:</span>
             <span>WeChat: carbon37558</span>
